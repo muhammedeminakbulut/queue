@@ -59,7 +59,11 @@ class AmqpMessagePublisher implements MessagePublisherInterface
         $body = $message->getBody();
         $route = $message->getRoutingKey();
         $props = $message->getProperties()->toArray();
-
+        
+        if (!$this->exchange->getConnection()->isConnected()) {
+            $this->exchange->getConnection()->reconnect();
+        }
+        
         return $this->exchange->publish($body, $route, $flags, $props);
     }
 }
